@@ -1,42 +1,35 @@
-const express = require('express');
-const app = express();
-const mysql = require('mysql');
- 
-const config = require('./models/config')
-  
-   const userRoutes = require('./router/auth')
+const express = require('express')
+const app = express()
+const env = require('dotenv')
+const mongoose = require('mongoose')
 
 
+  // routers
+  const userRoutes = require('./router/auth')
+
+   env.config();
+
+
+   mongoose.connect(`mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@cluster0.jcbia.mongodb.net/${process.env.MONGO_DB_DATABASE}?retryWrites=true&w=majority`,
+{
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(() => {console.log('Database Connected')})
 
    app.use(express.json());
 
-  // app.use(
-  //   cors({
-  //     origin: "*",
-  //   })
-  // );
-
- app.use('/api', userRoutes)
 
 
-app.get('/', async (req ,res) => {
-//   config.query('SELECT * FROM crypto_transaction_history', function (err, recordset) {
-//         if (err) console.log(err)
-//         res.send(recordset);
-        
-    // });
+app.use('/api', userRoutes)
+
+
+// app.get('/', (req ,res) => {
 
 
 
-});
-
-app.get("/login", (req, res) =>{
-
-  
-});
+// });
 
 
-const PORT = process.env.PORT || 3000;
- app.listen(PORT,() => {
-     console.log(`server working on ${PORT}`)
- })
+app.listen(process.env.PORT, () => {
+    console.log(`server is running on port ${process.env.PORT}`)
+})
