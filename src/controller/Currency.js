@@ -1,17 +1,12 @@
 
 const Currency = require('../models/suppoted_currency')
 
-exports.suppoted_currency= (req, res) => {
 
-    Currency.findOne()
-    .exec((error, curr) => {
-        console.log(curr)
-        if (curr) return res.status(400).json({ message: "user already registered" });
-    
-        // const { email, password, conform_password, parent_ref_code } = req.body;
-        // if(password !== conform_password){
-        //     return res.status(400).json({
-        //         message: "Enter same password"})
-        // }
-    })
-}
+exports.suppoted_currency= async(req, res) => {
+    try {
+        const places = await Currency.find();
+        res.status(200).json({ places });
+      } catch (error) {
+        res.status(400).json({ message: `${error}` });
+      }
+};

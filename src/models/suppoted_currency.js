@@ -25,6 +25,6 @@ trade_fee: { type: Number},
 withdrawal_fee: { type: Number},
 withdrawal_limit: { type: Number},
 deposit_fee : { type: Number}
-}, { timestamps: true });
+}, { timestamps: true, collection: 'suppoted_currency' });
 
 module.exports = mongoose.model('suppoted_currency', suppoted_currencySchema)

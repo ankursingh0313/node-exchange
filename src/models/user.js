@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
     ip_address: { type: String  },
     wallet_password: { type: String  },
     user_status: { type: Number}
-}, { timestamps: true });
+}, { timestamps: true, collection: 'user'});
 
 
 
