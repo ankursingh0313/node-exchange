@@ -1,11 +1,13 @@
 const express = require('express')
 const app = express()
 const env = require('dotenv')
+const cors = require('cors')
 const mongoose = require('mongoose')
 
 
   // routers
   const userRoutes = require('./router/auth')
+  const currencyRoutes = require('./router/Currency')
 
    env.config();
 
@@ -18,15 +20,17 @@ const mongoose = require('mongoose')
 
    app.use(express.json());
 
+   app.use(cors({
+    origin: '*'
+}));
 
-
+// API
 app.use('/api', userRoutes)
+app.use('/api', currencyRoutes)
 
-
-// app.get('/', (req ,res) => {
-
-
-
+// app.get("/signup", (req,res) => {
+//     console.log("hello");
+// res.json({status:1, msg:"signup"});
 // });
 
 
