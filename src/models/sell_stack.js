@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const sell_stackSchema = new mongoose.Schema({
     order_id: { type: String},
@@ -16,4 +16,4 @@ const sell_stackSchema = new mongoose.Schema({
     order_type: { type: String, default: 'exc' },
 }, { timestamps: true, collection: 'sell_stack' });
 
-module.exports = mongoose.model('sell_stack', sell_stackSchema)
+module.exports = mongoose.model("sell_stack", sell_stackSchema);
