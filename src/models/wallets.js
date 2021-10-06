@@ -10,7 +10,7 @@ const walletsSchema = new mongoose.Schema({
     balance: { type: Number },
     v_balanace: { type: Number },
     locked: { type: Number },
-    date: { type: Date },
+    date: { type: Date.now() },
     type: { type: String },
     wallet_status: { type: Number },
 }, { timestamps: true, collection: 'wallets' });
