@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const walletsSchema = new mongoose.Schema(
+const main_walletSchema = new mongoose.Schema(
   {
     private_key: { type: String },
     public_key: { type: String },
@@ -14,8 +14,9 @@ const walletsSchema = new mongoose.Schema(
     date: { type: Date.now() },
     type: { type: String },
     wallet_status: { type: Number },
+    withdrawal_balance: { type: Number },
   },
-  { timestamps: true, collection: "wallets" }
+  { timestamps: true, collection: "main_wallet" }
 );
 
-module.exports = mongoose.model("wallets", walletsSchema);
+module.exports = mongoose.model("main_wallet", main_walletSchema);
