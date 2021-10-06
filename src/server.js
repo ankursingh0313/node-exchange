@@ -3,7 +3,7 @@ const app = express()
 const env = require('dotenv')
 const cors = require('cors')
 const mongoose = require('mongoose')
-
+const bodyparser = require('body-parser');
 
   // routers
 const userRoutes = require('./router/auth')
@@ -11,7 +11,7 @@ const currencyRoutes = require('./router/Currency')
 const orderRoutes = require('./router/orders')
 
 
-   env.config();
+env.config();
 
 
    mongoose.connect(`mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@cluster0.jcbia.mongodb.net/${process.env.MONGO_DB_DATABASE}?retryWrites=true&w=majority`,
@@ -19,18 +19,19 @@ const orderRoutes = require('./router/orders')
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {console.log('Database Connected')})
-app.use(
-    express.urlencoded({
-        extended: true
-    })
-)
+// app.use(
+//     express.urlencoded({
+//         extended: true
+//     })
+// )
 
 app.use(express.json());
 
 app.use(cors({
 origin: '*'
 }));
-
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({ extended: true }));
 // API
 app.use('/api', userRoutes)
 app.use('/api', currencyRoutes)

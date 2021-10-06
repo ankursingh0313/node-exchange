@@ -2,17 +2,17 @@ const { validateUserId, validateCurrency, validateAmount, validatePrice, checkUs
 
 function orderValidator(req, res, next) {
     // code for checking currenct user have perticular balance or not
-    const data = req.body ? req.body : {};
-    const user_id = data.user_id ? data.user_id : undefined;
-    const currency = data.currency ? data.currency : undefined;
-    const compare_currency = data.compare_currency ? data.compare_currency : undefined;
-    const amount = data.amount ? data.amount : undefined;
-    const price = data.price ? data.price : undefined;
+    const body      = req.body ? req.body : {};
+    const user_id   = body.user_id ? body.user_id : undefined;
+    const currency  = body.currency ? body.currency : undefined;
+    const compare_currency = body.compare_currency ? body.compare_currency : undefined;
+    const volume    = body.volume ? body.volume : undefined;
+    const price     = body.raw_price ? body.raw_price : undefined;
    
     if (validateUserId(user_id) &&
         validateCurrency(currency) &&
         validateCurrency(compare_currency) &&
-        validateAmount(amount) &&
+        validateAmount(volume) &&
         validatePrice(price)
     ) {
         console.log('All clear!', req.url)
