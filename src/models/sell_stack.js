@@ -2,19 +2,18 @@ const mongoose = require("mongoose");
 
 const sell_stackSchema = new mongoose.Schema(
   {
-    order_id: { tupe: String },
-    user_id: { tupe: String },
-    raw_price: { tupe: Number },
-    currency_type: { tupe: String },
-    compare_currency: { tupe: String },
-    volume: { tupe: String },
-    order_date: { tupe: String },
-    time_stamp: { tupe: String },
-    total_sell: { tupe: String },
-    last_reansaction: { tupe: String },
-    order_status: { tupe: Number },
-    sell_from: { tupe: String },
-    trade_by: { tupe: String },
+    order_id: { type: String },
+    user_id: { type: String },
+    raw_price: { type: Number },
+    currency_type: { type: String },
+    compare_currency: { type: String },
+    volume: { type: String },
+    order_date: { type: String, default:Date.now() },
+    execution_date: { type: String },
+    total_sell: { type: String },
+    last_reansaction: { type: String },
+    order_status: { type: Number },
+    sell_from: { type: String },
   },
   { timestamps: true, collection: "sell_stack" }
 );
