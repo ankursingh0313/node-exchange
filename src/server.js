@@ -8,7 +8,8 @@ const mongoose = require('mongoose')
   // routers
 const userRoutes = require('./router/auth')
 const currencyRoutes = require('./router/Currency')
-// const orderRoutes = require('')
+const orderRoutes = require('./router/orders')
+
 
    env.config();
 
@@ -18,16 +19,22 @@ const currencyRoutes = require('./router/Currency')
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {console.log('Database Connected')})
+app.use(
+    express.urlencoded({
+        extended: true
+    })
+)
 
-   app.use(express.json());
+app.use(express.json());
 
-   app.use(cors({
-    origin: '*'
+app.use(cors({
+origin: '*'
 }));
 
 // API
 app.use('/api', userRoutes)
 app.use('/api', currencyRoutes)
+app.use('/api', orderRoutes);
 
 // app.get("/signup", (req,res) => {
 //     console.log("hello");

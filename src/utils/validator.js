@@ -32,10 +32,11 @@ function validatePrice(price) {
     }
 }
 
-function checkUserBalance(currency) {
+function checkUserBalance(user_id, currency) {
     // check user balance and return
     return 0;
 }
+
 module.exports = {
     validateUserId,
     validateCurrency,
