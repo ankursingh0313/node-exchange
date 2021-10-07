@@ -7,7 +7,7 @@ const walletsSchema = new mongoose.Schema(
     wallet_address: { type: String },
     wallet_hex: { type: String },
     wallet_type: { type: String },
-    user: { type: String },
+    user_id: { type: String },
     balance: { type: Number },
     v_balanace: { type: Number },
     locked: { type: Number },
