@@ -9,6 +9,7 @@ const bodyparser = require('body-parser');
 const userRoutes = require('./router/auth')
 const currencyRoutes = require('./router/Currency')
 const orderRoutes = require('./router/orders')
+const tradeRoutes = require('./router/trade')
 
 
 env.config();
@@ -36,6 +37,7 @@ app.use(bodyparser.urlencoded({ extended: true }));
 app.use('/api', userRoutes)
 app.use('/api', currencyRoutes)
 app.use('/api', orderRoutes);
+app.use('/api', tradeRoutes);
 
 // app.get("/signup", (req,res) => {
 //     console.log("hello");

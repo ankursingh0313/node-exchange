@@ -20,6 +20,7 @@
     "express-flash": "^0.0.2",
     "express-session": "^1.17.2",
     "express-validator": "^6.12.2",
+    "flatted": "^3.2.2",
     "globby": "^10.0.1",
     "jsonwebtoken": "^8.5.1",
     "module": "^1.1.0",
