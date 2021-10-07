@@ -13,7 +13,60 @@ function validateUserId(user_id) {
         return false;
     }
 }
-
+async function validateOrderId(order_id, type='exc', dbCheck=false) {
+    let order_id_array = order_id.split('/');
+    let order_direction = '';
+    if (order_id_array.length == 2) {
+        order_direction = order_id_array[order_id_array.length - 1];
+        if (order_direction !== 's' && order_direction !== 'b') { return false; }
+    } else { return false; }
+    if (dbCheck) {
+        if (order_direction == '') { return false; }
+        if (order_direction == 's') {
+            const SellStack = require('../models/sell_stack');
+            try {
+                const order_data = await SellStack.findOne({ "order_id": order_id });
+                if (order_data && order_data.amount) { } else { return false };
+            } catch (error) {
+                return false;
+            }
+        } else if (order_direction == 'b') {
+            const BuyStack = require('../models/buy_stack');
+            try {
+                const order_data = await BuyStack.findOne({ "order_id": order_id });
+                if (order_data && order_data.amount) { } else { return false };
+            } catch (error) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    order_id_array = order_id_array[0].split('$');
+    if (type == 'exc') {
+        if (order_id_array.length == 2 &&
+            order_id_array[0] == 'order'
+        ) { } else {
+            return false;
+        }
+    } else if (type == 'p2p') {
+        if (order_id_array.length == 3 &&
+            order_id_array[0] == 'order' &&
+            order_id_array[1] == 'p2p'
+        ) { } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+    if (order_id) {
+        console.log('true_order_id')
+        return true;
+    } else {
+        return false;
+    }
+    return true;
+}
 function validateCurrency(currency) {
     // validate that currency exists or not
     // check that currency is supported by us or not
@@ -64,5 +117,6 @@ module.exports = {
     validateUserId,
     validateCurrency,
     validateAmount,
-    validatePrice
+    validatePrice,
+    validateOrderId
 }
