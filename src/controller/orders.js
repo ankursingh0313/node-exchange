@@ -6,7 +6,7 @@ const { executeOrder } = require('../utils/functions.orders');
 exports.sellOrder = async (req, res) => {
     const SellStack = require('../models/sell_stack');
     const body = req.body;
-    const balance = await getUserBalance(body.user_id, body.currency_type);
+    const {balance} = await getUserBalance(body.user_id, body.currency_type);
     /*if (body.volume > balance) {
         return res.json({
             status: 200,
@@ -32,7 +32,7 @@ exports.sellOrder = async (req, res) => {
         const sellstack = await SellStack.create({
             order_id, user_id, raw_price, currency_type, compare_currency, volume, order_date, execution_time, total_executed, last_reansaction, order_status, executed_from, order_type
         })
-        const isDeducted = await updateUserBalance(user_id, currency_type, volume, 'sub', '');
+        const isDeducted = await updateUserLockBalance(user_id, currency_type, volume);
         if (!isDeducted) {
             await SellStack.deleteOne({ "order_id": order_id });
             return res.json({
@@ -88,7 +88,7 @@ exports.sellOrder = async (req, res) => {
 exports.buyOrder = async (req, res) => {
     const BuyStack = require('../models/buy_stack');
     const body = req.body;
-    const balance = await getUserBalance(body.user_id, body.compare_currency); // here we will check for compare currency balance
+    const {balance} = await getUserBalance(body.user_id, body.compare_currency); // here we will check for compare currency balance
     if (parseFloat(body.volume) * parseFloat(body.raw_price) > balance ) {
         return res.json({
             status: 200,
@@ -114,7 +114,7 @@ exports.buyOrder = async (req, res) => {
         const buystack = await BuyStack.create({
             order_id, user_id, raw_price, currency_type, compare_currency, volume, order_date, execution_time, total_executed, last_reansaction, order_status, executed_from, order_type
         })
-        const isDeducted = await updateUserBalance(user_id, compare_currency, (volume)*(raw_price), 'sub');
+        const isDeducted = await updateUserLockBalance(user_id, compare_currency, (volume)*(raw_price));
         if (!isDeducted) {
             await BuyStack.deleteOne({ "order_id": order_id });
             return res.json({

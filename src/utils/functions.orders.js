@@ -1,3 +1,4 @@
+const { sendBalanceToUserWallet } = require("./function.wallets");
 const { validateOrderId } = require("./validator");
 
 async function executeOrder(order, deepCheck = true) {
@@ -14,47 +15,78 @@ async function executeOrder(order, deepCheck = true) {
             const buy_orders = await BuyStack.find({ currency_type: { $regex: new RegExp(order.currency_type, "i") }, compare_currency: { $regex: new RegExp(order.compare_currency, "i") }, order_status: 0, raw_price: order.raw_price });
             if (buy_orders.length <= 0) { return false; }
             buy_orders.map(async (order_node) => {
-                if (order_node.volume == order.volume) {
+                const available_volume = parseFloat(order.volume) - parseFloat(order.total_executed);
+                const next_order_available_volume = parseFloat(order_node.volume) - parseFloat(order_node.total_executed);
+                if (next_order_available_volume == available_volume) {
                     // update both 
                     const history = {
                         currency_type: order.currency_type,
                         compare_currency: order.currency_type,
                         price: order.raw_price,
-                        volume: order.volume,
+                        volume: available_volume,
                         sell_user_id: order.user_id,
                         buy_user_id: order_node.user_id,
                         sell_order_id: order.order_id,
                         buy_order_id: order_node.order_id,
                         trade_type: order.order_type
                     };
+                    const seller_order_update_status = await updateOrder(order.order_id, available_volume, order_node.user_id, 'sell');
+                    const buyer_order_update_status = await updateOrder(order_node.order_id, available_volume, order.user_id, 'buy');
+                    const seller_wallet_update_status = await sendBalanceToUserWallet(order.currency_type, order.compare_currency, order.user_id, available_volume, order.raw_price, order.order_type == 'sell' ? 'sub' : 'add');
+                    const buyer_wallet_update_status = await sendBalanceToUserWallet(order.currency_type, order.compare_currency, order_node.user_id, available_volume, order.raw_price, order.order_type != 'sell' ? 'sub' : 'add');
+                    console.log("seller_wallet_update_status: ", seller_wallet_update_status);
+                    console.log("buyer_wallet_update_status: ", buyer_wallet_update_status);
+                    console.log("seller_order_update_status: ", seller_order_update_status);
+                    console.log("buyer_order_update_status: ", buyer_order_update_status);
                     history_id = await createOrderHistory(history);
-                } else if (order_node.volume > order.volume) {
+                    console.log("history_id: ", history_id);
+                } else if (next_order_available_volume > available_volume) {
                     // update self
                     const history = {
                         currency_type: order.currency_type,
                         compare_currency: order.compare_currency,
                         price: order.raw_price,
-                        volume: order.volume,
+                        volume: available_volume,
                         sell_user_id: order.user_id,
                         buy_user_id: order_node.user_id,
                         sell_order_id: order.order_id,
                         buy_order_id: order_node.order_id,
                         trade_type: order.order_type
                     };
+                    const seller_order_update_status = await updateOrder(order.order_id, available_volume, order_node.user_id, 'sell');
+                    const buyer_order_update_status = await updateOrder(order_node.order_id, available_volume, order.user_id, 'buy');
+                    const seller_wallet_update_status = await sendBalanceToUserWallet(order.currency_type, order.compare_currency, order.user_id, available_volume, order.raw_price, order.order_type == 'sell' ? 'sub' : 'add');
+                    const buyer_wallet_update_status = await sendBalanceToUserWallet(order.currency_type, order.compare_currency, order_node.user_id, available_volume, order.raw_price, order.order_type != 'sell' ? 'sub' : 'add');
+                    if (seller_wallet_update_status) { } else {
+
+                    }
+                    if (buyer_wallet_update_status) { } else {
+
+                    }
                     history_id = await createOrderHistory(history);
-                } else if (order_node.volume < order.volume) {
+                } else if (next_order_available_volume < available_volume) {
                     // update him
                     const history = {
                         currency_type: order.currency_type,
                         compare_currency: order.compare_currency,
                         price: order.raw_price,
-                        volume: order_node.volume,
+                        volume: next_order_available_volume,
                         sell_user_id: order.user_id,
                         buy_user_id: order_node.user_id,
                         sell_order_id: order.order_id,
                         buy_order_id: order_node.order_id,
                         trade_type: order.order_type
                     };
+                    const seller_order_update_status = await updateOrder(order.order_id, next_order_available_volume, order_node.user_id, 'sell');
+                    const buyer_order_update_status = await updateOrder(order_node.order_id, next_order_available_volume, order.user_id, 'buy');
+                    const seller_wallet_update_status = await sendBalanceToUserWallet(order.currency_type, order.compare_currency, order.user_id, next_order_available_volume, order.raw_price, order.order_type == 'sell' ? 'sub' : 'add');
+                    const buyer_wallet_update_status = await sendBalanceToUserWallet(order.currency_type, order.compare_currency, order_node.user_id, next_order_available_volume, order.raw_price, order.order_type != 'sell' ? 'sub' : 'add');
+                    if (seller_wallet_update_status) { } else {
+
+                    }
+                    if (buyer_wallet_update_status) { } else {
+
+                    }
                     history_id = await createOrderHistory(history)
                 }
             })
@@ -119,8 +151,58 @@ async function createOrderHistory(history) {
     }
     return history_id;
 }
-async function updateWallet() {
-    
+async function updateOrder(order_id, total_executed, executed_from, order_direction) {
+    if (order_direction == 'sell') {
+        try {
+            const SellStack = require('../models/sell_stack');
+            const order = await SellStack.findOne({ order_id: order_id });
+            const new_total_executed = parseFloat(order.total_executed) + parseFloat(total_executed);
+            const new_status = order.volume == new_total_executed ? 1 : 0;
+            const new_last_transaction = order.last_reansaction + ',' + total_executed;
+            const new_execution_time = order.execution_time + ',' + Date.now();
+            const new_executed_from = order.executed_from + ',' + executed_from;
+
+            await SellStack.updateOne({ order_id: order_id }, {
+                $set: {
+                    order_status    : new_status,
+                    total_executed  : new_total_executed,
+                    last_transaction: new_last_transaction,
+                    execution_time  : new_execution_time,
+                    executed_from   : new_executed_from
+                }
+            })
+            return true;
+        } catch (error) {
+            console.log("Error: >from: utils> functions.orders > updateOrder > try-extract and insert (fetching buy stack): ", error.message);
+            return false;
+        }
+    } else if (order_direction == 'buy') {
+        try {
+            const BuyStack = require('../models/buy_stack');
+            const order = await BuyStack.findOne({ order_id: order_id });
+            const new_total_executed = parseFloat(order.total_executed) + parseFloat(total_executed);
+            const new_status = order.volume == new_total_executed ? 1 : 0;
+            const new_last_transaction = order.last_reansaction + ',' + total_executed;
+            const new_execution_time = order.execution_time + ',' + Date.now();
+            const new_executed_from = order.executed_from + ',' + executed_from;
+
+            await BuyStack.updateOne({ order_id: order_id }, {
+                $set: {
+                    order_status: new_status,
+                    total_executed: new_total_executed,
+                    last_transaction: new_last_transaction,
+                    execution_time: new_execution_time,
+                    executed_from: new_executed_from
+                }
+            })
+            return true;
+        } catch (error) {
+            console.log("Error: >from: utils> functions.orders > updateOrder > try-extract and insert (fetching buy stack): ", error.message);
+            return false;
+        }
+    } else {
+        return false;
+    }
 }
 module.exports = {
     executeOrder
