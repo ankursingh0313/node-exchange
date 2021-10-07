@@ -18,7 +18,7 @@ exports.suppoted_currency= async(req, res) => {
         }
         res.status(200).json({ currencyList });
       } catch (error) {
-        res.status(400).json({ message: `${error}` });
+        retres.status(400).json({ message: `${error}` });
       }
 }
 
