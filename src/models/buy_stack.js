@@ -9,10 +9,10 @@ const buy_stackSchema = new mongoose.Schema({
     volume: { type: String },
     order_date: { type: String },
     execution_time: { type: String },
-    total_sell: { type: String },
+    total_executed: { type: String },
     last_reansaction: { type: String },
     order_status: { type: Number },
-    buy_from:   { type: String },
+    executed_from:   { type: String },
     order_type: { type: String, default: 'exc' },
  
 }, { timestamps: true, collection: 'buy_stack' });

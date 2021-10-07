@@ -9,17 +9,17 @@ function orderValidator(req, res, next) {
     const volume    = body.volume ? body.volume : undefined;
     const price     = body.raw_price ? body.raw_price : undefined;
    
-    if (validateUserId(user_id) &&
+    if (!(validateUserId(user_id) &&
         validateCurrency(currency) &&
         validateCurrency(compare_currency) &&
         validateAmount(volume) &&
-        validatePrice(price)
+        validatePrice(price))
     ) {
         console.log('All clear!', req.url)
         next();
     } else {
         return res.json({
-            status: 200,
+            status: 400,
             error: true,
             message: 'Invalid Request',
             data: req.body

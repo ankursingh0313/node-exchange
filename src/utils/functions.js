@@ -17,6 +17,9 @@ function createUniqueID(type = 'user') {
         case 'p2p_buy_order':
             id = 'order$p2p$' + unique_string + '/b';
             break;
+        case 'history':
+            id = 'history$' + unique_string;
+            break;
         default:
             id = unique_string + '/u';
             break;
