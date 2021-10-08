@@ -28,6 +28,8 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.3.0",
     "node-fetch": "^3.0.0",
-    "nodemon": "^2.0.13"
+    "nodemailer": "^6.6.5",
+    "nodemon": "^2.0.13",
+    "passport-local": "^1.0.0"
   }
 }
