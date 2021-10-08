@@ -1,19 +1,20 @@
-const { getUserBalance, updateUserBalance } = require('../utils/function.wallets');
+const { getUserBalance, updateUserBalance, updateUserLockBalance } = require('../utils/function.wallets');
 const { createUniqueID } = require('../utils/functions');
 const { executeOrder } = require('../utils/functions.orders');
 
 
 exports.sellOrder = async (req, res) => {
     const SellStack = require('../models/sell_stack');
+    await executeOrder({}, false);
     const body = req.body;
     const {balance} = await getUserBalance(body.user_id, body.currency_type);
-    /*if (body.volume > balance) {
+    if (body.volume > balance) {
         return res.json({
             status: 200,
             error: true,
             message: 'Insufficient fund in wallet!'
         })
-    }*/
+    }
     const order_id      = createUniqueID('sell_order');
     const user_id       = body.user_id;
     const raw_price     = parseFloat(body.raw_price);
@@ -27,7 +28,7 @@ exports.sellOrder = async (req, res) => {
     const order_status  = 0;
     const executed_from = '';
     const order_type = body.type == 'p2p' ? 'p2p' : 'exc';
-    /*
+    
     try {
         const sellstack = await SellStack.create({
             order_id, user_id, raw_price, currency_type, compare_currency, volume, order_date, execution_time, total_executed, last_reansaction, order_status, executed_from, order_type
@@ -48,7 +49,7 @@ exports.sellOrder = async (req, res) => {
             error: true,
             message: "Order couldn't create"
         })
-    }*/
+    }
 
     const order = {
         order_id,
@@ -66,13 +67,28 @@ exports.sellOrder = async (req, res) => {
         order_status
     }
     try {
-        await executeOrder(order);
+        const historyId = await executeOrder(order, false);
+        if (historyId) {
+            return res.json({
+                status: 200,
+                error: false,
+                message: 'Order Created and Executed Successfully!',
+                order_id
+            })
+        } else {
+            return res.json({
+                status: 200,
+                error: false,
+                message: "Order Created Successfully, but didn't Executed (in queue)!",
+                order_id
+            })
+        }
     } catch (error) {
-        console.log("Error: >from: controller> orders > sellOrder > try2 (order execution): ", error.message);
+        console.log("Error: >from: controller> orders > buyOrder > try2 (order execution): ", error.message);
         return res.json({
             status: 400,
             error: true,
-            message: "Order created but execution error found!"
+            message: "Order Created Successfully, but didn't Executed (in queue)*"
         })
     }
     
@@ -109,7 +125,7 @@ exports.buyOrder = async (req, res) => {
     const order_status = 0;
     const executed_from = '';
     const order_type = body.type == 'p2p' ? 'p2p' : 'exc';
-    /*
+    
     try {
         const buystack = await BuyStack.create({
             order_id, user_id, raw_price, currency_type, compare_currency, volume, order_date, execution_time, total_executed, last_reansaction, order_status, executed_from, order_type
@@ -130,7 +146,7 @@ exports.buyOrder = async (req, res) => {
             error: true,
             message: "Order couldn't create"
         })
-    }*/
+    }
     const order = {
         order_id,
         user_id,

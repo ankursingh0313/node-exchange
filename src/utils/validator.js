@@ -112,11 +112,39 @@ function validatePrice(price) {
     return false;
 }
 
+function validateUniqueAccessToken(token) {
+    try {
+        const { token_salt_arr, token_letter_arr, categories } = require('./globals');
+        const token_arr = token.split('-');
+        if (token_arr.length != 5) {
+            return false;
+        }
+        const d1 = parseInt(token_arr[0], 36);
+        const d2 = parseInt(token_arr[4], 32);
+        if (d1 != d2) {
+            return false;
+        }
+        if (!token_salt_arr.includes(token_arr[2])) {
+            return false;
+        }
+        if (!token_letter_arr.includes(token_arr[3])) {
+            return false;
+        }
+        if (!categories.includes(token_arr[1])) {
+            return false;
+        }
+    } catch (error) {
+        console.log("Err from: utils > validator > validateUniqueAccessToken > try: ", error.message)
+        return false;
+    }
+    return true;
+}
 
 module.exports = {
     validateUserId,
     validateCurrency,
     validateAmount,
     validatePrice,
-    validateOrderId
+    validateOrderId,
+    validateUniqueAccessToken
 }
