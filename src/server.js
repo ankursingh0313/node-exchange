@@ -10,8 +10,10 @@ const bodyparser = require('body-parser');
 const userRoutes = require('./router/auth');
 const currencyRoutes = require('./router/Currency');
 const orderRoutes = require('./router/orders');
-const tradeRoutes = require('./router/trade');
+// const tradeRoutes = require('./router/trade');
 // require('./socket/socket-setver');
+const tradeRoutes = require('./router/history')
+
 
 const map = new Map();
 env.config();
