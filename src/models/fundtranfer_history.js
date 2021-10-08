@@ -6,8 +6,8 @@ to_user:    { type: String },
 from_user:  { type: String },
 wallet_type:    { type: String },
 amount: { type: String },
-date:   { type: Date.now() },
-time:   { type: Date.now() },
+date:   { type: String, default: Date.now() },
+time:   { type: String, default: Date.now() },
   },
   { timestamps: true, collection: "fundtranfer_history" }
 );
