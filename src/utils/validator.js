@@ -140,11 +140,24 @@ function validateUniqueAccessToken(token) {
     return true;
 }
 
+function verifyOTP(otp, email_otp) {
+    const valid_duration = 5*60*1000;
+    const email_otp_arr = email_otp.split('_');
+    const _otp = parseInt(email_otp_arr[0]);
+    const timestamp = parseInt(email_otp_arr[1]);
+    const current_date = Date.now();
+    if (current_date <= (timestamp+valid_duration) && otp == _otp) {
+        return true;
+    } else {
+        return false;
+    }
+}
 module.exports = {
     validateUserId,
     validateCurrency,
     validateAmount,
     validatePrice,
     validateOrderId,
-    validateUniqueAccessToken
+    validateUniqueAccessToken,
+    verifyOTP
 }
