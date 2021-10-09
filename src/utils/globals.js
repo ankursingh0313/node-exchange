@@ -1,4 +1,4 @@
-const token_salt_arr = ['aezakmi',
+const token_salt_arr = ['AEZAKMI',
     'BAGUVIX',
     'FULLCLIP',
     'CVWKXAM',
@@ -46,3 +46,8 @@ const token_letter_arr = ['a', 'e', 'i', 'o', 'u', 'z'];
  * z: forever with update permission
  */
 const categories = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'z'];
+module.exports = {
+    token_salt_arr,
+    token_letter_arr,
+    categories
+}

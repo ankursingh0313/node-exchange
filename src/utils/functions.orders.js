@@ -1,5 +1,7 @@
 const { sendBalanceToUserWallet } = require("./function.wallets");
+const { createSocketClient } = require("./functions.socket");
 const { validateOrderId } = require("./validator");
+const socket = createSocketClient('kujgwvfq-z-ghosttown-z-1fhhup0p6');
 
 async function executeOrder(order, deepCheck = true) {
     const { calculateTakerFee, calculateMakerFee } = require('./functions');
@@ -40,6 +42,13 @@ async function executeOrder(order, deepCheck = true) {
                         // console.log("seller_order_update_status: ", seller_order_update_status);
                         // console.log("buyer_order_update_status: ", buyer_order_update_status);
                         history_id = await createOrderHistory(history);
+                        let obj = {
+                            currency_type: order.currency_type,
+                            compare_currency: order.compare_currency,
+                            raw_price: order.raw_price,
+                            volume: available_volume
+                        }
+                        socket.emit("update_order_history", obj);
                         console.log("history_id: ", history_id);
                     } else if (next_order_available_volume > available_volume) {
                         // update self
@@ -63,7 +72,13 @@ async function executeOrder(order, deepCheck = true) {
                         const buyer_wallet_update_status = await sendBalanceToUserWallet(order.currency_type, order.compare_currency, order_node.user_id, (parseFloat(available_volume) - parseFloat(taker_fee)), order.raw_price, order.order_type != 'sell' ? 'sub' : 'add');
 
                         history_id = await createOrderHistory(history);
-
+                        let obj = {
+                            currency_type: order.currency_type,
+                            compare_currency: order.compare_currency,
+                            raw_price: order.raw_price,
+                            volume: available_volume
+                        }
+                        socket.emit("update_order_history", obj);
                     } else if (next_order_available_volume < available_volume) {
                         // update him
                         const taker_fee = calculateTakerFee(available_volume);
@@ -87,6 +102,13 @@ async function executeOrder(order, deepCheck = true) {
                         const buyer_wallet_update_status = await sendBalanceToUserWallet(order.currency_type, order.compare_currency, order_node.user_id, (parseFloat(next_order_available_volume) - parseFloat(taker_fee)), order.raw_price, order.order_type != 'sell' ? 'sub' : 'add');
 
                         history_id = await createOrderHistory(history)
+                        let obj = {
+                            currency_type: order.currency_type,
+                            compare_currency: order.compare_currency,
+                            raw_price: order.raw_price,
+                            volume: next_order_available_volume
+                        }
+                        socket.emit("update_order_history", obj);
                     }
                 }
             })
@@ -128,6 +150,13 @@ async function executeOrder(order, deepCheck = true) {
                         // console.log("seller_order_update_status: ", seller_order_update_status);
                         // console.log("buyer_order_update_status: ", buyer_order_update_status);
                         history_id = await createOrderHistory(history);
+                        let obj = {
+                            currency_type: order.currency_type,
+                            compare_currency: order.compare_currency,
+                            raw_price: order.raw_price,
+                            volume: available_volume
+                        }
+                        socket.emit("update_order_history", obj);
                         console.log("history_id: ", history_id);
                     } else if (next_order_available_volume > available_volume) {
                         // update self
@@ -151,6 +180,13 @@ async function executeOrder(order, deepCheck = true) {
                         const buyer_wallet_update_status = await sendBalanceToUserWallet(order.currency_type, order.compare_currency, order.user_id, (parseFloat(available_volume) - parseFloat(taker_fee)), order.raw_price, order.order_type != 'sell' ? 'sub' : 'add');
 
                         history_id = await createOrderHistory(history);
+                        let obj = {
+                            currency_type: order.currency_type,
+                            compare_currency: order.compare_currency,
+                            raw_price: order.raw_price,
+                            volume: available_volume
+                        }
+                        socket.emit("update_order_history", obj);
 
                     } else if (next_order_available_volume < available_volume) {
                         // update him
@@ -175,6 +211,13 @@ async function executeOrder(order, deepCheck = true) {
                         const buyer_wallet_update_status = await sendBalanceToUserWallet(order.currency_type, order.compare_currency, order.user_id, (parseFloat(next_order_available_volume) - parseFloat(taker_fee)), order.raw_price, order.order_type != 'sell' ? 'sub' : 'add');
 
                         history_id = await createOrderHistory(history)
+                        let obj = {
+                            currency_type: order.currency_type,
+                            compare_currency: order.compare_currency,
+                            raw_price: order.raw_price,
+                            volume: next_order_available_volume
+                        }
+                        socket.emit("update_order_history", obj);
                     }
                 } 
             })

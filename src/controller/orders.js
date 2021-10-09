@@ -1,7 +1,8 @@
 const { getUserBalance, updateUserBalance, updateUserLockBalance } = require('../utils/function.wallets');
 const { createUniqueID } = require('../utils/functions');
 const { executeOrder } = require('../utils/functions.orders');
-
+const { createSocketClient } = require('../utils/functions.socket');
+const socket = createSocketClient('kujgwvfq-z-ghosttown-z-1fhhup0p6');
 
 exports.sellOrder = async (req, res) => {
     const SellStack = require('../models/sell_stack');
@@ -33,6 +34,7 @@ exports.sellOrder = async (req, res) => {
         const sellstack = await SellStack.create({
             order_id, user_id, raw_price, currency_type, compare_currency, volume, order_date, execution_time, total_executed, last_reansaction, order_status, executed_from, order_type
         })
+        
         const isDeducted = await updateUserLockBalance(user_id, currency_type, volume);
         if (!isDeducted) {
             await SellStack.deleteOne({ "order_id": order_id });
@@ -41,6 +43,15 @@ exports.sellOrder = async (req, res) => {
                 error: true,
                 message: 'Insufficient fund in wallet!'
             })
+        }
+        if (socket.connected) {
+            let obj = {
+                currency_type,
+                compare_currency,
+                raw_price,
+                volume
+            }
+            socket.emit("update_sell_stack", obj);
         }
     } catch (error) {
         console.log("Error: >from: controller> orders > sellOrder > try: ", error.message);
@@ -130,6 +141,7 @@ exports.buyOrder = async (req, res) => {
         const buystack = await BuyStack.create({
             order_id, user_id, raw_price, currency_type, compare_currency, volume, order_date, execution_time, total_executed, last_reansaction, order_status, executed_from, order_type
         })
+
         const isDeducted = await updateUserLockBalance(user_id, compare_currency, (volume)*(raw_price));
         if (!isDeducted) {
             await BuyStack.deleteOne({ "order_id": order_id });
@@ -138,6 +150,15 @@ exports.buyOrder = async (req, res) => {
                 error: true,
                 message: 'Insufficient fund in wallet!'
             })
+        }
+        if (socket.connected) {
+            let obj = {
+                currency_type,
+                compare_currency,
+                raw_price,
+                volume
+            }
+            socket.emit("update_buy_stack", obj);
         }
     } catch (error) {
         console.log("Error: >from: controller> orders > buyOrder > try: ", error.message);

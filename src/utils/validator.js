@@ -124,7 +124,7 @@ function validateUniqueAccessToken(token) {
         if (d1 != d2) {
             return false;
         }
-        if (!token_salt_arr.includes(token_arr[2])) {
+        if (!token_salt_arr.includes(token_arr[2].toUpperCase())) {
             return false;
         }
         if (!token_letter_arr.includes(token_arr[3])) {
