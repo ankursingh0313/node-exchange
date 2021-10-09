@@ -22,10 +22,79 @@ exports.suppoted_currency= async(req, res) => {
       }
 }
 
+exports.addCurrency = (req, res) => {
+    try{
+          Currency.findOne({ symbol: req.body.symbol })
+          .exec((error, currency) => {
+                if(currency) return res.status(200).json({ message: "Currency Already avilable" });
+                const { symbol,
+                        name,
+                        icon,
+                        dw,
+                        is_paired_inr,
+                        pairing_currency,
+                        is_paired_usdt,
+                        is_paired_btc,
+                        is_paired_vrx,
+                        inr_price,
+                        usdt_price,
+                        btc_price, 
+                        vrx_price, 
+                        is_paired,
+                        is_buy, 
+                        is_sell,
+                        coin_status,  
+                        contract_address,
+                        contract_type,
+                        trade_fee,
+                        withdrawal_fee,
+                        withdrawal_limit,
+                        deposit_fee } = req.body
 
 
-// ;$or: [
-//     {symbol: {symbols.map((v) => (v, v))}},
-//     {symbol: { $regex: new RegExp('btc', "i")}},
-//     {symbol: { $regex: new RegExp('trx', "i")}}
-//   ]
+                        const _currency = new Currency({
+                          symbol,
+                          name,
+                          icon,
+                          dw,
+                          is_paired_inr,
+                          pairing_currency,
+                          is_paired_usdt,
+                          is_paired_btc,
+                          is_paired_vrx,
+                          inr_price,
+                          usdt_price,
+                          btc_price, 
+                          vrx_price, 
+                          is_paired,
+                          is_buy, 
+                          is_sell,
+                          coin_status,  
+                          contract_address,
+                          contract_type,
+                          trade_fee,
+                          withdrawal_fee,
+                          withdrawal_limit,
+                          deposit_fee
+                        })
+                        _currency.save((error, currency) => {
+                          console.log(_currency);
+                          if (error) {
+                              console.log(error)
+                              return res.status(400).json({
+                              message: "Somthing went wrong",
+                              });
+                          }
+                          if (currency) {
+                            return res.status(201).json({
+                            message: "New currency Add",
+                            })
+                          }
+                    })  
+                    
+              })
+      } catch {
+          return res.status(400).json({ error: error})
+  }
+
+}

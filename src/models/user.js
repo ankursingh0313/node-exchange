@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema(
   {
-    user_id: { type: Number },
+    user_id: { type: String },
     email: { type: String, required: true },
     hash_password: { type: String, required: true },
     mobile_number: { type: Number },
@@ -12,11 +12,11 @@ const userSchema = new mongoose.Schema(
     self_ref_code: { type: String },
     parent_ref_code: { type: String },
     user_role: { type: Number },
-    email_otp: { type: Number },
-    is_email_verified: { type: Number },
+    email_otp: { type: String },
+    is_email_verified: { type: Boolean , default: false, required: true},
     is_kyc_verified: { type: Number },
     is_bank_verified: { type: Number },
-    email_otp_valid: { type: String },
+    email_otp: { type: String },
     is_mobile_verified: { type: Number },
     mobile_otp: { type: String },
     mobile_otp_valid: { type: String },
