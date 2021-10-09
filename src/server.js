@@ -65,10 +65,10 @@ const order_history = new Map();
  */
 io.use((socket, next) => {
     if (isValidUser(socket)) {
-        console.log("valid");
+        console.log("valid access token: ", { "access_token": socket.handshake.auth.token, "id": socket.id });
         next();
     } else {
-        console.log("invalid")
+        console.log("invalid access token: ", { "access_token": socket.handshake.auth.token, "id": socket.id  })
         next(new Error("invalid request"));
     }
 });
@@ -160,7 +160,7 @@ io.on("connection", (socket) => {
             console.log("buy_stack updated");
         } else { }
     })
-    
+
 });
 
 // server starting
